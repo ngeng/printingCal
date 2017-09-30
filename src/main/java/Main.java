@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 
-public class main {
+public class Main {
     public static void main(String [] args) {
         ArrayList<Job> jobs = readJobsFromFile();
         double totalPrice = 0.0;
@@ -12,7 +12,7 @@ public class main {
             job.printDetails();
             totalPrice += job.getTotalPrice();
         }
-        System.out.println("Total price: $"+totalPrice/100);
+        System.out.println("Total price: $"+String.format("%.2f", totalPrice/100));
     }
 
     public static ArrayList<Job> readJobsFromFile() {
