@@ -1,6 +1,6 @@
 public class Calculator {
 
-    public int setPricePerPage(boolean isColoured, boolean isDoubleSided) {
+    public int setUnitPrice(boolean isColoured, boolean isDoubleSided) {
         int pricePerPage = 0;
         if(!isColoured && !isDoubleSided) {
             pricePerPage = 15;
@@ -15,7 +15,7 @@ public class Calculator {
     }
 
     public int calculateJobPrice(int totalPageCount, int colouredPageCount, boolean isDoubleSided) {
-        return setPricePerPage(true, isDoubleSided)*colouredPageCount
-                + setPricePerPage(false, isDoubleSided)*(totalPageCount-colouredPageCount);
+        return setUnitPrice(true, isDoubleSided)*colouredPageCount
+                + setUnitPrice(false, isDoubleSided)*(totalPageCount-colouredPageCount);
     }
 }
