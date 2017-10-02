@@ -1,0 +1,28 @@
+!!model.PriceList
+priceList:
+  - pageSize: A4
+    pageType: SINGLE
+    colourScheme: BW
+    unitPrice: 15
+  - pageSize: A4
+    pageType: SINGLE
+    colourScheme: COLOUR
+    unitPrice: 25
+  - pageSize: A4
+    pageType: DOUBLE
+    colourScheme: BW
+    unitPrice: 10
+  - pageSize: A4
+    pageType: DOUBLE
+    colourScheme: COLOUR
+    unitPrice: 20
+
+
+
+
+
+
+
+
+
+

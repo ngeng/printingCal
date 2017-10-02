@@ -1,15 +1,16 @@
 import model.PageType;
+import model.PriceList;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
 
 public class Main {
     public static void main(String [] args) {
+        loadPriceList();
         try {
             String filePath = readUserInput("Please input job file path：");
+//            /Users/Aimee_G/Desktop/printjobs.csv
             ArrayList<Job> jobs = readJobsFromFile(filePath);
             double totalPrice = 0.0;
             for (Job job: jobs) {
@@ -22,8 +23,18 @@ public class Main {
         }
     }
 
+    public static void loadPriceList() {
+        PriceList list = null;
+        Yaml yaml = new Yaml();
+        try(InputStream in = ClassLoader.getSystemResourceAsStream("UnitPrice.yaml")) {
+            list = yaml.loadAs(in, PriceList.class);
+            PriceList.getInstance().setPriceList(list.getPriceList());
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static ArrayList<Job> readJobsFromFile(String filePath) {
-//        String filePath = "src/main/resources/printjobs.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
@@ -57,11 +68,10 @@ public class Main {
     private static String readUserInput(String prompt) throws IOException {
         String result;
         do {
-            // 输出提示文字
             System.out.print(prompt);
             InputStreamReader is_reader = new InputStreamReader(System.in);
             result = new BufferedReader(is_reader).readLine();
-        } while (isInvalid(result)); // 当用户输入为空的时候，反复提示要求用户输入
+        } while (isInvalid(result));
 
         return result;
     }

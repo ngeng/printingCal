@@ -34,12 +34,12 @@ public class Job {
     public int getTotalPrice() { return totalPrice; }
     public void setTotalPrice() {
        this.totalPrice = new Calculator().calculateJobPrice(totalPageCount, colouredPageCount,
-               pageType==PageType.DOUBLE?true:false);
+               pageType);
     }
 
     public void printDetails() {
-        System.out.println("Details: "+totalPageCount+" pages, "+colouredPageCount+" coloured pages, "
-                +getPageType()+" sized."
-                +" totalPrice: "+totalPrice+" cents.");
+        System.out.println("Job details: "+totalPageCount+" pages, "+colouredPageCount+" coloured pages, "
+                +(pageType==PageType.SINGLE?"single":"double")+" sized."
+                +" Price: "+totalPrice+" cents.");
     }
 }
