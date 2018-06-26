@@ -12,7 +12,7 @@ public class Main {
         loadPriceList();
         try {
             String filePath = readUserInput("Please input job file path：");
-//            /Users/Aimee_G/Desktop/printjobs.csv
+//            /Users/aimeeg/Desktop/printjobs.csv
             ArrayList<Job> jobs = readJobsFromFile(filePath);
             double totalPrice = 0.0;
             for (Job job: jobs) {
