@@ -1,6 +1,7 @@
-import model.ColourScheme;
-import model.PageType;
-import model.PriceList;
+import main.Calculator;
+import main.model.ColourScheme;
+import main.model.PageType;
+import main.model.PriceList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;

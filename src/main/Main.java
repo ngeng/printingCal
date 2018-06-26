@@ -1,5 +1,7 @@
-import model.PageType;
-import model.PriceList;
+package main;
+
+import main.model.PageType;
+import main.model.PriceList;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;

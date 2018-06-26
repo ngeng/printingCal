@@ -1,7 +1,9 @@
-import model.ColourScheme;
-import model.PageType;
-import model.PriceList;
-import model.UnitPrice;
+package main;
+
+import main.model.ColourScheme;
+import main.model.PageType;
+import main.model.PriceList;
+import main.model.UnitPrice;
 
 public class Calculator {
 

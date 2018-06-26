@@ -1,6 +1,8 @@
-import model.ColourScheme;
-import model.PageSize;
-import model.PageType;
+package main;
+
+import main.model.ColourScheme;
+import main.model.PageSize;
+import main.model.PageType;
 
 public class Job {
     private PageSize pageSize;
