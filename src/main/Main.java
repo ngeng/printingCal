@@ -1,32 +1,34 @@
 package main;
 
-import main.model.PageType;
+import main.consumers.JobConsumer;
 import main.model.PriceList;
+import main.producers.EventStream;
+import main.producers.JobProducer;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.InputStream;
 
 public class Main {
+    public static double totalPrice = 0.0;
     public static void main(String [] args) {
         loadPriceList();
         try {
-            String filePath = readUserInput("Please input job file path：");
+//            String filePath = readUserInput("Please input job file path：");
 //            /Users/aimeeg/Desktop/printjobs.csv
-            ArrayList<Job> jobs = readJobsFromFile(filePath);
-            double totalPrice = 0.0;
-            for (Job job: jobs) {
-                job.printDetails();
-                totalPrice += job.getTotalPrice();
-            }
-            System.out.println("Total price: $"+String.format("%.2f", totalPrice/100));
-        } catch (IOException e) {
+//            String filePath = "/Users/aimeeg/Desktop/printjobs.csv";
+            EventStream eventStream =
+                    new JobProducer();
+            JobConsumer jobConsumer =
+                    new JobConsumer();
+            eventStream.produce(jobConsumer);
+            
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void loadPriceList() {
-        PriceList list = null;
+        PriceList list;
         Yaml yaml = new Yaml();
         try(InputStream in = ClassLoader.getSystemResourceAsStream("UnitPrice.yaml")) {
             list = yaml.loadAs(in, PriceList.class);
@@ -34,48 +36,6 @@ public class Main {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public static ArrayList<Job> readJobsFromFile(String filePath) {
-        BufferedReader br = null;
-        String line = "";
-        String cvsSplitBy = ",";
-
-        ArrayList<Job> jobs = new ArrayList();
-        try {
-            br = new BufferedReader(new FileReader(filePath));
-            while ((line = br.readLine()) != null) {
-                String[] jobItems = line.split(cvsSplitBy);
-                Job job = new Job(Integer.parseInt(jobItems[0].trim()),
-                                Integer.parseInt(jobItems[1].trim()),
-                                (jobItems[2].trim().equals("true")? PageType.DOUBLE:PageType.SINGLE));
-                jobs.add(job);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return jobs;
-    }
-
-    private static String readUserInput(String prompt) throws IOException {
-        String result;
-        do {
-            System.out.print(prompt);
-            InputStreamReader is_reader = new InputStreamReader(System.in);
-            result = new BufferedReader(is_reader).readLine();
-        } while (isInvalid(result));
-
-        return result;
     }
 
     private static boolean isInvalid(String str) {

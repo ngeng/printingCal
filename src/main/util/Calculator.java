@@ -1,4 +1,4 @@
-package main;
+package main.util;
 
 import main.model.ColourScheme;
 import main.model.PageType;

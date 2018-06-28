@@ -1,4 +1,4 @@
-import main.Calculator;
+import main.util.Calculator;
 import main.model.ColourScheme;
 import main.model.PageType;
 import main.model.PriceList;
