@@ -46,10 +46,15 @@ public class SimpleJobProducer implements EventStream, AutoCloseable{
             try {
                 List<Job> jobList = new ArrayList<>();
                 while (!finishReadingJobs || !stream.isEmpty()) { 
-//                    Thread.sleep(5000);
-                    JobEvent event = consumer.consume(stream.poll(1, SECONDS));
-                    System.out.println("Queue length: " + stream.size());
-                    jobList.add(event.getJob());
+                    Thread.sleep(5000);
+                    try {
+                        JobEvent event = consumer.consume(stream.poll(1, SECONDS));
+                        System.out.println("Queue length: " + stream.size());
+                        jobList.add(event.getJob());
+                    } catch (NullPointerException e) {
+                        // TODO
+                        continue;
+                    }
                 }
                 Double totalPrice = jobList.stream().mapToDouble(i -> i.getTotalPrice()).sum();
                 System.out.println("Total price: $"+String.format("%.2f", totalPrice/100));
