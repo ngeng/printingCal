@@ -3,21 +3,17 @@ package main;
 import main.consumers.JobConsumer;
 import main.model.PriceList;
 import main.producers.EventStream;
-import main.producers.JobProducer;
+import main.producers.SimpleJobProducer;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 
 public class Main {
-    public static double totalPrice = 0.0;
     public static void main(String [] args) {
         loadPriceList();
         try {
-//            String filePath = readUserInput("Please input job file path：");
-//            /Users/aimeeg/Desktop/printjobs.csv
-//            String filePath = "/Users/aimeeg/Desktop/printjobs.csv";
             EventStream eventStream =
-                    new JobProducer();
+                    new SimpleJobProducer();
             JobConsumer jobConsumer =
                     new JobConsumer();
             eventStream.produce(jobConsumer);
@@ -38,9 +34,6 @@ public class Main {
         }
     }
 
-    private static boolean isInvalid(String str) {
-        return str.equals("");
-    }
 
 }
 
