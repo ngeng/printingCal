@@ -9,8 +9,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,23 +17,29 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
-public class SimpleJobProducer implements EventStream, AutoCloseable{
+public class JobProducer implements EventStream, AutoCloseable{
     
-    private final LinkedBlockingQueue<JobEvent> stream = new LinkedBlockingQueue<>(2);
+    private final LinkedBlockingQueue<JobEvent> stream = new LinkedBlockingQueue<>(3);
     private final ExecutorService reader = Executors.newSingleThreadExecutor();
     private final ExecutorService operator = Executors.newSingleThreadExecutor();
-    private boolean finishReadingJobs;
-
+    private double totalPrice;
+    
+    public double getTotalPrice() { return totalPrice; }
+    public synchronized void setTotalPrice(double price) {
+        totalPrice += price;
+    }
+    
     @Override
     public void produce(EventConsumer consumer) {
         // generate print jobs to queue
         Runnable jobsGenerator = () -> {
             try {
-                BufferedReader br = new BufferedReader(new FileReader("/Users/aimeeg/Desktop/printjobs.csv"));
-                readJobsFromFile(br);
+                readJobsFromFile();
             } catch (InterruptedException e) {
+                System.err.println("Interrupted.");
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
+                System.err.println("Failed not found.");
                 e.printStackTrace();
             }
         };
@@ -44,20 +48,18 @@ public class SimpleJobProducer implements EventStream, AutoCloseable{
         // pass jobs from queue to the consumer
         Runnable passEventToConsumer = () -> {
             try {
-                List<Job> jobList = new ArrayList<>();
-                while (!finishReadingJobs || !stream.isEmpty()) { 
+                while (!reader.isShutdown() || !stream.isEmpty()) {
                     Thread.sleep(5000);
                     try {
                         JobEvent event = consumer.consume(stream.poll(1, SECONDS));
                         System.out.println("Queue length: " + stream.size());
-                        jobList.add(event.getJob());
+                        setTotalPrice(event.getJob().getTotalPrice());
                     } catch (NullPointerException e) {
                         // TODO
                         continue;
                     }
                 }
-                Double totalPrice = jobList.stream().mapToDouble(i -> i.getTotalPrice()).sum();
-                System.out.println("Total price: $"+String.format("%.2f", totalPrice/100));
+                System.out.println("Total price: $"+String.format("%.2f", getTotalPrice()/100));
             } catch (InterruptedException e) {
                 System.err.println("Thread was interrupted, Failed to complete operation: " + e);
             }
@@ -65,7 +67,9 @@ public class SimpleJobProducer implements EventStream, AutoCloseable{
         operator.execute(passEventToConsumer);
     }
     
-    public void readJobsFromFile(BufferedReader br) throws InterruptedException {
+    public void readJobsFromFile() throws FileNotFoundException, InterruptedException {
+        BufferedReader br = new BufferedReader(
+                new FileReader("/Users/aimeeg/Desktop/printjobs.csv"));
         String line;
         String cvsSplitBy = ",";
         
@@ -76,14 +80,14 @@ public class SimpleJobProducer implements EventStream, AutoCloseable{
                         Integer.parseInt(jobItems[1].trim()),
                         (jobItems[2].trim().equals("true")? PageType.DOUBLE:PageType.SINGLE));
                 JobEvent event = new JobEvent(UUID.randomUUID(), job);
-                Thread.sleep(1000);
+                Thread.sleep(5000);
                 stream.put(event);
             }
         } catch (IOException e) {
-            // TODO
+            System.err.println("Failed to read next line.");
             e.printStackTrace();
         } finally {
-            finishReadingJobs = true;
+            reader.shutdown();
             if (br != null) {
                 try {
                     br.close();
@@ -96,7 +100,6 @@ public class SimpleJobProducer implements EventStream, AutoCloseable{
     
     @Override
     public void close() {
-        System.err.println("Auto close threads.");
         reader.shutdown();
         operator.shutdown();
     }

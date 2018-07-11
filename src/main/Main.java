@@ -3,7 +3,7 @@ package main;
 import main.consumers.JobConsumer;
 import main.model.PriceList;
 import main.producers.EventStream;
-import main.producers.SimpleJobProducer;
+import main.producers.JobProducer;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -13,7 +13,7 @@ public class Main {
         loadPriceList();
         try {
             EventStream eventStream =
-                    new SimpleJobProducer();
+                    new JobProducer();
             JobConsumer jobConsumer =
                     new JobConsumer();
             eventStream.produce(jobConsumer);
